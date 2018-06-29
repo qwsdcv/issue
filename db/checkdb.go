@@ -20,8 +20,8 @@ const _Password = "db_passworld"
 //Db is a global sql.DB that will initialize in package.init
 var Db *sql.DB
 
-//Initialize database.Will auto create table needed if table not exist.
-func Initialize() {
+//init database.Will auto create table needed if table not exist.
+func init() {
 
 	ip := beego.AppConfig.String(_Ip)
 	port := beego.AppConfig.String(_Port)
@@ -62,13 +62,4 @@ func Initialize() {
 	if err != nil {
 		log.Panicf("Error:%s", err.Error())
 	}
-}
-
-func createTable(db *sql.DB) {
-	err := db.Ping()
-	if err != nil {
-		log.Panicf("Database Connection lost. Error:[%s]", err.Error())
-	}
-
-	db.Exec("")
 }

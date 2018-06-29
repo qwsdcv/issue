@@ -1,3 +1,4 @@
+#!/bin/bash
 
 #初始化 MariaDB
 #mysql -u root
@@ -8,4 +9,4 @@
 #>exit
 
 mysql -uroot -p123456 <SYSTEM.sql
-mysql -uissue -pissue <SQL.sql
+
