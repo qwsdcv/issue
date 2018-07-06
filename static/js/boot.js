@@ -1,6 +1,6 @@
 
 sap.ui.getCore().attachInit(function () {
-    new sap.m.Text({
-        text : "Hello World"
+    sap.ui.xmlview({
+        viewName : "i.main.Catalog"
      }).placeAt("content");
 });

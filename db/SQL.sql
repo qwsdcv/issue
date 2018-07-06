@@ -1,9 +1,11 @@
 
 CREATE TABLE IF NOT EXISTS articles(
     id int auto_increment primary key,
+    parent_id int,
     title varchar(256),
-    content text,
     create_date datetime,
+    type varchar(32),
+    content text,
     visits int
 );
 
