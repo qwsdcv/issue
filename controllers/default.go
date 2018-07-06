@@ -4,12 +4,12 @@ import (
 	"github.com/astaxie/beego"
 )
 
+//MainController default page controller
 type MainController struct {
 	beego.Controller
 }
 
+//Get get request.
 func (c *MainController) Get() {
-	c.Data["Website"] = "beego.me"
-	c.Data["Email"] = "astaxie@gmail.com"
 	c.TplName = "index.html"
 }

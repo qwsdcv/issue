@@ -1,3 +1,4 @@
+use my;
 
 CREATE TABLE IF NOT EXISTS articles(
     id int auto_increment primary key,

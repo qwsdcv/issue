@@ -68,7 +68,7 @@ sap.ui.define([
                 method: 'POST',
                 dataType: 'json',
                 error: (jqXHR, textStatus, errorThrown) => {
-                    MessageToast.toast(textStatus);
+                    MessageToast.show(textStatus);
                 },
                 data: data,
                 success: () => { }
