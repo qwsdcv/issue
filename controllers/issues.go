@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
+	"issues/models"
 
 	"github.com/astaxie/beego"
 
-	"issues/db"
 	"log"
 )
 
@@ -19,12 +19,16 @@ func (c *IssueController) Get() {
 
 }
 
-//Post handle post request
-func (c *IssueController) Post() {
-	var bean db.Article
-	err := json.Unmarshal(c.Ctx.Input.RequestBody, bean)
+//AddMenu handle post request and return Menu info as JSON
+func (c *IssueController) AddMenu() {
+	log.Println(c.Ctx.Input.RequestBody)
+
+	var bean models.Article
+	err := json.Unmarshal(c.Ctx.Input.RequestBody, &bean)
 	if err != nil {
 		c.Abort("500")
 	}
 	log.Printf("%s", c.Ctx.Input.URL())
+
+	bean.AddMenu()
 }

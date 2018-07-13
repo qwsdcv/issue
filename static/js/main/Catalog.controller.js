@@ -67,10 +67,11 @@ sap.ui.define([
                 url: '/issues/menu',
                 method: 'POST',
                 dataType: 'json',
+                contentType:'application/json; charset=utf-8',
                 error: (jqXHR, textStatus, errorThrown) => {
                     MessageToast.show(textStatus);
                 },
-                data: data,
+                data: JSON.stringify(data),
                 success: () => { }
             });
         }

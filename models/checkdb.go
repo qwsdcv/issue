@@ -1,8 +1,6 @@
-package db
+package models
 
 import (
-	"database/sql"
-
 	"log"
 
 	"fmt"
@@ -17,8 +15,11 @@ const _Db = "db_db"
 const _User = "db_user"
 const _Password = "db_passworld"
 
-//Db is a global sql.DB that will initialize in package.init
-var Db *sql.DB
+//ConnectString parameter passing to Db.Open. Use sql.Open(db.DBName, db.ConnectString) to open a Connection
+var ConnectString string
+
+//DBName parameter passing to Db.Open. Use sql.Open(db.DBName, db.ConnectString) to open a Connection
+var DBName = "mysql"
 
 //init database.Will auto create table needed if table not exist.
 func init() {
@@ -55,11 +56,7 @@ func init() {
 		log.Panicf("DB Name Not Set. Please set \"db_db=xxxx\" in conf/app.conf")
 	}
 
-	log.Printf("DSN set as:%s", config.FormatDSN())
+	ConnectString = config.FormatDSN()
 
-	Db, err := sql.Open("mysql", config.FormatDSN())
-	defer Db.Close()
-	if err != nil {
-		log.Panicf("Error:%s", err.Error())
-	}
+	log.Printf("DSN set as:%s", ConnectString)
 }
