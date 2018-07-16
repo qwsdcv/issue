@@ -70,18 +70,30 @@ func GetMenu() (jsonObj []Article, err error) {
 	}
 	retArray := make([]Article, 0, 64)
 	for key, value := range Map {
-		if value.ParentID == 0 {
-			retArray = append(retArray, *value)
-		} else {
+		if value.ParentID != 0 {
 			kid := Map[key]
 			father := Map[value.ParentID]
 			father.Data = append(father.Data, *kid)
 		}
 	}
-	sort.Sort(atcls(retArray))
+	for _, value := range Map {
+		if value.ParentID == 0 {
+			retArray = append(retArray, *value)
+		}
+	}
+	sortRecursive(atcls(retArray))
 	jsonObj = retArray
 
 	return
+}
+
+func sortRecursive(res atcls) {
+	sort.Sort(atcls(res))
+	for _, value := range res {
+		if len(value.Data) > 0 {
+			sortRecursive(value.Data)
+		}
+	}
 }
 
 type atcls []Article
