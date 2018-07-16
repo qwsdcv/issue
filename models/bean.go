@@ -34,7 +34,7 @@ func (ar *Article) AddMenu() (ret error) {
 	tm := time.Now()
 	t := FormatTime(&tm)
 
-	rs, err := con.Exec("INSERT INTO articles(parent_id,title,create_date,type) VALUES(?,?,?,?)", ar.ParentID, ar.Title, t, folder)
+	rs, err := con.Exec("INSERT INTO articles(parent_id,title,create_date,type) VALUES(?,?,?,?)", ar.ParentID, ar.Title, t, ar.Type)
 	if err != nil {
 		log.Println(err.Error())
 		ret = err

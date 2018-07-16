@@ -1,0 +1,8 @@
+
+.sapMTreeItemBaseExpander {
+	width: 3rem;
+	height: 2.5rem;
+	line-height: 2.5rem;
+	font-size: 0.7rem;
+	flex-shrink: 0;
+}

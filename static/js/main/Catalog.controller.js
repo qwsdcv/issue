@@ -6,9 +6,15 @@ sap.ui.define([
 ], function (jQuery, MessageToast, Controller, JSONModel) {
     "use strict";
 
+
+    const FOLDER = "Folder";
+    const DOCUMENT = "Document";
+
     var Catalog = Controller.extend("i.main.Catalog", {
 
         onInit: function () {
+            jQuery.sap.includeStyleSheet("/static/css/Custom.css");
+
             this.Split = this.byId("Split");
             this.Tree = this.byId("catalog");
             this.Tree.setMode("SingleSelectMaster");
@@ -19,6 +25,7 @@ sap.ui.define([
             this.getView().setModel(this.JsonModel);
 
             this.CurrentSelected = null;
+            this.NewType = FOLDER;
 
             this.initPopup();
 
@@ -27,9 +34,9 @@ sap.ui.define([
 
         getIcon(type) {
             switch (type) {
-                case 'Folder':
+                case FOLDER:
                     return 'sap-icon://folder-blank';
-                case 'Document':
+                case DOCUMENT:
                     return 'sap-icon://document-text';
                 default:
                     return 'sap-icon://document-text';
@@ -38,6 +45,12 @@ sap.ui.define([
 
         newDocument: function (event) {
             jQuery.sap.log.info("newDocument");
+            let openTarget = this.Spacer;
+            if (this.CurrentSelected) {
+                openTarget = this.CurrentSelected;
+            }
+            this.NewType = DOCUMENT;
+            this.PopInput.openBy(openTarget);
         },
 
         newFolder: function (event) {
@@ -46,6 +59,7 @@ sap.ui.define([
             if (this.CurrentSelected) {
                 openTarget = this.CurrentSelected;
             }
+            this.NewType = FOLDER;
             this.PopInput.openBy(openTarget);
         },
 
@@ -67,7 +81,7 @@ sap.ui.define([
                 if (that.CurrentSelected) {
                     let currentPath = that.CurrentSelected.getBindingContextPath();
                     let obj = that.JsonModel.getObject(currentPath);
-                    if (obj.type == 'Folder') {
+                    if (obj.type == FOLDER) {
                         pId = obj.id;
                     } else {
                         pId = obj.parent_id;
@@ -77,7 +91,8 @@ sap.ui.define([
 
                 that.postNew({
                     title: text,
-                    parent_id: pId
+                    parent_id: pId,
+                    type: that.NewType
                 });
             };
         },
