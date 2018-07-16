@@ -56,6 +56,8 @@ func init() {
 		log.Panicf("DB Name Not Set. Please set \"db_db=xxxx\" in conf/app.conf")
 	}
 
+	config.ParseTime = true
+
 	ConnectString = config.FormatDSN()
 
 	log.Printf("DSN set as:%s", ConnectString)

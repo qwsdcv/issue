@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "issues/db"
+	_ "issues/models"
 	_ "issues/routers"
 
 	"github.com/astaxie/beego"

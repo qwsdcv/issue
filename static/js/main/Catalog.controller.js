@@ -11,18 +11,25 @@ sap.ui.define([
         onInit: function () {
             this.Split = this.byId("Split");
             this.Tree = this.byId("catalog");
+            this.Tree.setMode("SingleSelectMaster");
+            this.Spacer = this.byId("Spacer");
             this.PopInput = null;
 
-            this.CurrentPath = null;
+            this.JsonModel = new JSONModel();
+            this.getView().setModel(this.JsonModel);
+
+            this.CurrentSelected = null;
 
             this.initPopup();
+
+            this.loadMenu();
         },
 
         getIcon(type) {
             switch (type) {
-                case 'folder':
+                case 'Folder':
                     return 'sap-icon://folder-blank';
-                case 'document':
+                case 'Document':
                     return 'sap-icon://document-text';
                 default:
                     return 'sap-icon://document-text';
@@ -35,10 +42,11 @@ sap.ui.define([
 
         newFolder: function (event) {
             jQuery.sap.log.info("newFolder");
-
-
-
-            this.PopInput.openBy(this.Tree);
+            let openTarget = this.Spacer;
+            if (this.CurrentSelected) {
+                openTarget = this.CurrentSelected;
+            }
+            this.PopInput.openBy(openTarget);
         },
 
         initPopup: function () {
@@ -47,7 +55,7 @@ sap.ui.define([
             }
             this.getView().addDependent(this.PopInput);
             let that = this;
-            
+
             let input = sap.ui.getCore().byId("NewMenuItem");
             input.onsapenter = (e) => {
                 let text = input.getValue();
@@ -55,25 +63,84 @@ sap.ui.define([
                 input.setValue('');
                 jQuery.sap.log.info(text);
 
+                let pId = null;
+                if (that.CurrentSelected) {
+                    let currentPath = that.CurrentSelected.getBindingContextPath();
+                    let obj = that.JsonModel.getObject(currentPath);
+                    if (obj.type == 'Folder') {
+                        pId = obj.id;
+                    } else {
+                        pId = obj.parent_id;
+                    }
+
+                }
+
                 that.postNew({
-                    title:text,
-                    parent_id:null
+                    title: text,
+                    parent_id: pId
                 });
             };
         },
+        loadMenu: function () {
+            this.Tree.setBusy(true);
+            let that = this
+            $.ajax({
+                url: '/issues/menu',
+                method: 'GET',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                error: (jqXHR, textStatus, errorThrown) => {
+                    MessageToast.show(textStatus);
+                },
+                success: (json) => {
+                    that.recursiveSetIcon(json);
+                    that.getView().getModel().setData(json)
+                    this.Tree.setBusy(false);
+                }
+            });
+        },
+        recursiveSetIcon: function (data) {
+            data.forEach((one) => {
+                one.icon = this.getIcon(one.type);
+                if (one.nodes) {
+                    this.recursiveSetIcon(one.nodes);
+                }
+            });
+        },
+
+        /*addItems:function (jsonArray) {
+            let that =this;
+            jsonArray.forEach((one,index)=>{
+                let item = new sap.m.StandardTreeItem({
+                    icon:that.getIcon(one.type),
+                    title:one.title
+                });
+                that.Tree.addItem(item);
+            });
+        },*/
 
         postNew: function (data) {
+            this.Tree.setBusy(true);
+            let that = this
             $.ajax({
                 url: '/issues/menu',
                 method: 'POST',
                 dataType: 'json',
-                contentType:'application/json; charset=utf-8',
+                contentType: 'application/json; charset=utf-8',
                 error: (jqXHR, textStatus, errorThrown) => {
                     MessageToast.show(textStatus);
                 },
                 data: JSON.stringify(data),
-                success: () => { }
+                success: (json) => {
+                    that.recursiveSetIcon(json);
+                    that.getView().getModel().setData(json)
+                    this.Tree.setBusy(false);
+                }
             });
+        },
+        selectionChange: function (oEvent) {
+            var iItem = oEvent.getParameter("listItem");
+            this.CurrentSelected = iItem/*.getBindingContextPath()*/;
         }
 
     });

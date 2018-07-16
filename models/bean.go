@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"log"
+	"sort"
 	"time"
 )
 
@@ -15,7 +16,7 @@ type Article struct {
 	Type       string    `json:"type"`
 	Content    string    `json:"content"`
 	Visits     string    `json:"visits"`
-	Data       []Article `json:"data"`
+	Data       []Article `json:"nodes"`
 }
 
 var (
@@ -44,13 +45,13 @@ func (ar *Article) AddMenu() (ret error) {
 }
 
 // GetMenu return menu hierarchy
-func GetMenu() (json string, err error) {
+func GetMenu() (jsonObj []Article, err error) {
 	con, err := sql.Open(DBName, ConnectString)
 	defer con.Close()
 	if err != nil {
 		return
 	}
-	rows, err := con.Query("select * from articles")
+	rows, err := con.Query("select id,parent_id,title,create_date,type from articles")
 	defer rows.Close()
 	if err != nil {
 		return
@@ -59,8 +60,9 @@ func GetMenu() (json string, err error) {
 	for rows.Next() {
 		t := new(time.Time)
 		ar := new(Article)
-		err = rows.Scan(&ar.ID, &ar.ParentID, &ar.Title, &t, &ar.Type, &ar.Content, &ar.Visits)
+		err = rows.Scan(&ar.ID, &ar.ParentID, &ar.Title, &t, &ar.Type)
 		if err != nil {
+			log.Println(err.Error())
 			return
 		}
 		ar.CreateDate = FormatTime(t)
@@ -76,5 +78,20 @@ func GetMenu() (json string, err error) {
 			father.Data = append(father.Data, *kid)
 		}
 	}
+	sort.Sort(atcls(retArray))
+	jsonObj = retArray
+
 	return
+}
+
+type atcls []Article
+
+func (t atcls) Len() int {
+	return len(t)
+}
+func (t atcls) Swap(i, j int) {
+	t[i], t[j] = t[j], t[i]
+}
+func (t atcls) Less(i, j int) bool {
+	return t[i].ID < t[j].ID
 }

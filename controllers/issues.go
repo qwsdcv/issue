@@ -19,6 +19,16 @@ func (c *IssueController) Get() {
 
 }
 
+//LoadMenu handle get request and return Menu info as JSON
+func (c *IssueController) LoadMenu() {
+	obj, err := models.GetMenu()
+	if err != nil {
+		c.CustomAbort(500, err.Error())
+	}
+	c.Data["json"] = obj
+	c.ServeJSON()
+}
+
 //AddMenu handle post request and return Menu info as JSON
 func (c *IssueController) AddMenu() {
 	log.Println(c.Ctx.Input.RequestBody)
@@ -26,9 +36,16 @@ func (c *IssueController) AddMenu() {
 	var bean models.Article
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &bean)
 	if err != nil {
-		c.Abort("500")
+		c.CustomAbort(500, err.Error())
 	}
 	log.Printf("%s", c.Ctx.Input.URL())
 
 	bean.AddMenu()
+	obj, err := models.GetMenu()
+	if err != nil {
+		c.CustomAbort(500, err.Error())
+	}
+	c.Data["json"] = obj
+
+	c.ServeJSON()
 }
