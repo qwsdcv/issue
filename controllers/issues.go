@@ -49,3 +49,15 @@ func (c *IssueController) AddMenu() {
 
 	c.ServeJSON()
 }
+
+//LoadContent handle get request and return content info as JSON
+func (c *IssueController) LoadContent() {
+	id := c.Ctx.Input.Param(":id")
+	obj, err := models.GetContent(id)
+	if err != nil {
+		c.CustomAbort(500, err.Error())
+	}
+	c.Data["json"] = obj
+
+	c.ServeJSON()
+}

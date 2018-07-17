@@ -156,6 +156,30 @@ sap.ui.define([
         selectionChange: function (oEvent) {
             var iItem = oEvent.getParameter("listItem");
             this.CurrentSelected = iItem/*.getBindingContextPath()*/;
+            let currentPath = this.CurrentSelected.getBindingContextPath();
+            let obj = this.JsonModel.getObject(currentPath);
+
+            if (obj.type == DOCUMENT) {
+                this.getContent(obj.id);
+            }
+        },
+
+        getContent: function (id) {
+            let detailPage = this.byId("detail");
+            detailPage.setBusy(true);
+            let that = this;
+            $.ajax({
+                url: 'issues/content/' + id,
+                method: 'GET',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                error: (jqXHR, textStatus, errorThrown) => {
+                    MessageToast.show(textStatus);
+                },
+                success: (json) => {
+                    that.setBusy(false);
+                }
+            });
         }
 
     });

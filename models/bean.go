@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"sort"
+	"strconv"
 	"time"
 )
 
@@ -106,4 +107,32 @@ func (t atcls) Swap(i, j int) {
 }
 func (t atcls) Less(i, j int) bool {
 	return t[i].ID < t[j].ID
+}
+
+//GetContent return the Article whose Id is @id
+func GetContent(id string) (ar Article, err error) {
+	con, err := sql.Open(DBName, ConnectString)
+	defer con.Close()
+	if err != nil {
+		return
+	}
+	intID, err := strconv.Atoi(id)
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+	rows := con.QueryRow("select id,parent_id,title,create_date,type,content,visits from articles where id=?", intID)
+	t := new(time.Time)
+	var content sql.NullString
+	err = rows.Scan(&ar.ID, &ar.ParentID, &ar.Title, &t, &ar.Type, &content, &ar.Visits)
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+	if content.Valid {
+		ar.Content = content.String
+	}
+	ar.CreateDate = FormatTime(t)
+
+	return
 }
