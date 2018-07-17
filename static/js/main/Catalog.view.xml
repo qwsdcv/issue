@@ -1,12 +1,24 @@
 <mvc:View 
 	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns:l="sap.ui.layout" 
 	xmlns:core="sap.ui.core" controllerName="i.main.Catalog" 
 	xmlns="sap.m">
 	<SplitApp id="Split" initialDetail="detail" initialMaster="master" orientationChange="onOrientationChange">
 		<detailPages>
-			<Page id="detail" title="Detail" class="sapUiStdPage">
+			<Page id="detail" title="Detail">
 				<content>
-					<core:HTML id="pageDetail" />
+					<l:VerticalLayout width="100%">
+						<l:BlockLayout background="Dashboard">
+							<l:BlockLayoutRow>
+								<l:BlockLayoutCell>
+									<TextArea id="TypeHere" rows="100" width="100%" valueLiveUpdate="true" liveChange="handleLiveChange" growing="true" wrapping="None"/>
+								</l:BlockLayoutCell>
+								<l:BlockLayoutCell>
+									<core:HTML id="PreviewHere"/>
+								</l:BlockLayoutCell>
+							</l:BlockLayoutRow>
+						</l:BlockLayout>
+					</l:VerticalLayout>
 				</content>
 			</Page>
 		</detailPages>

@@ -20,6 +20,8 @@ sap.ui.define([
             this.Tree.setMode("SingleSelectMaster");
             this.Spacer = this.byId("Spacer");
             this.PopInput = null;
+            this.TextArea = this.byId("TypeHere");
+            this.HTML = this.byId("PreviewHere");
 
             this.JsonModel = new JSONModel();
             this.getView().setModel(this.JsonModel);
@@ -30,6 +32,13 @@ sap.ui.define([
             this.initPopup();
 
             this.loadMenu();
+
+
+            this.Converter = new showdown.Converter();
+            this.Converter.setOption('tables', true);
+            this.Converter.setOption('tasklists', true);
+            this.Converter.setOption('emoji', true);
+            this.Converter.setOption('underline', true);
         },
 
         getIcon(type) {
@@ -177,9 +186,20 @@ sap.ui.define([
                     MessageToast.show(textStatus);
                 },
                 success: (json) => {
-                    that.setBusy(false);
+                    detailPage.setBusy(false);
                 }
             });
+        },
+
+        handleLiveChange: function (oEvent) {
+            let sValue = oEvent.getParameter("value");
+            jQuery.sap.log.info(sValue);
+
+            let converter = this.Converter;
+            let html = converter.makeHtml(sValue);
+            let finalHtml = `<div>${html}</div>`;
+
+            this.HTML.setContent(finalHtml);
         }
 
     });
