@@ -2,15 +2,15 @@ sap.ui.define([
     'jquery.sap.global',
     'sap/m/MessageToast',
     'sap/ui/core/mvc/Controller',
-    'sap/ui/model/json/JSONModel'
-], function (jQuery, MessageToast, Controller, JSONModel) {
+    'sap/ui/model/json/JSONModel',
+    'i/pkg/Formatter'
+], function (jQuery, MessageToast, Controller, JSONModel, Formatter) {
     "use strict";
 
 
-    const FOLDER = "Folder";
-    const DOCUMENT = "Document";
-
     var Catalog = Controller.extend("i.main.Catalog", {
+
+        Formatter: Formatter,
 
         onInit: function () {
             jQuery.sap.includeStyleSheet("/static/css/Custom.css");
@@ -26,8 +26,7 @@ sap.ui.define([
             this.JsonModel = new JSONModel();
             this.getView().setModel(this.JsonModel);
 
-            this.CurrentSelected = null;
-            this.NewType = FOLDER;
+            this.NewType = Formatter.FOLDER;
 
             this.initPopup();
 
@@ -41,24 +40,13 @@ sap.ui.define([
             this.Converter.setOption('underline', true);
         },
 
-        getIcon(type) {
-            switch (type) {
-                case FOLDER:
-                    return 'sap-icon://folder-blank';
-                case DOCUMENT:
-                    return 'sap-icon://document-text';
-                default:
-                    return 'sap-icon://document-text';
-            }
-        },
-
         newDocument: function (event) {
             jQuery.sap.log.info("newDocument");
             let openTarget = this.Spacer;
             if (this.CurrentSelected) {
                 openTarget = this.CurrentSelected;
             }
-            this.NewType = DOCUMENT;
+            this.NewType = Formatter.DOCUMENT;
             this.PopInput.openBy(openTarget);
         },
 
@@ -68,7 +56,7 @@ sap.ui.define([
             if (this.CurrentSelected) {
                 openTarget = this.CurrentSelected;
             }
-            this.NewType = FOLDER;
+            this.NewType = Formatter.FOLDER;
             this.PopInput.openBy(openTarget);
         },
 
@@ -90,7 +78,7 @@ sap.ui.define([
                 if (that.CurrentSelected) {
                     let currentPath = that.CurrentSelected.getBindingContextPath();
                     let obj = that.JsonModel.getObject(currentPath);
-                    if (obj.type == FOLDER) {
+                    if (obj.type == Formatter.FOLDER) {
                         pId = obj.id;
                     } else {
                         pId = obj.parent_id;
@@ -117,31 +105,11 @@ sap.ui.define([
                     MessageToast.show(textStatus);
                 },
                 success: (json) => {
-                    that.recursiveSetIcon(json);
                     that.getView().getModel().setData(json)
                     this.Tree.setBusy(false);
                 }
             });
         },
-        recursiveSetIcon: function (data) {
-            data.forEach((one) => {
-                one.icon = this.getIcon(one.type);
-                if (one.nodes) {
-                    this.recursiveSetIcon(one.nodes);
-                }
-            });
-        },
-
-        /*addItems:function (jsonArray) {
-            let that =this;
-            jsonArray.forEach((one,index)=>{
-                let item = new sap.m.StandardTreeItem({
-                    icon:that.getIcon(one.type),
-                    title:one.title
-                });
-                that.Tree.addItem(item);
-            });
-        },*/
 
         postNew: function (data) {
             this.Tree.setBusy(true);
@@ -156,7 +124,6 @@ sap.ui.define([
                 },
                 data: JSON.stringify(data),
                 success: (json) => {
-                    that.recursiveSetIcon(json);
                     that.getView().getModel().setData(json)
                     this.Tree.setBusy(false);
                 }
@@ -168,7 +135,7 @@ sap.ui.define([
             let currentPath = this.CurrentSelected.getBindingContextPath();
             let obj = this.JsonModel.getObject(currentPath);
 
-            if (obj.type == DOCUMENT) {
+            if (obj.type == Formatter.DOCUMENT) {
                 this.getContent(obj.id);
             }
         },
@@ -186,9 +153,34 @@ sap.ui.define([
                     MessageToast.show(textStatus);
                 },
                 success: (json) => {
+                    that.CurrentContentBinding = json;
+                    let text = json.content;
+                    that.TextArea.setValue(text);
+                    that.TextArea.fireLiveChange({value:text});
                     detailPage.setBusy(false);
                 }
             });
+        },
+
+        setContent: function () {
+
+            if (this.TextAreaChange && this.CurrentContentBinding) {
+                let text = this.TextArea.getValue();
+                this.CurrentContentBinding.content = text;
+                $.ajax({
+                    url: 'issues/content/' + this.CurrentContentBinding.id,
+                    method: 'POST',
+                    dataType: 'json',
+                    data: JSON.stringify(this.CurrentContentBinding),
+                    contentType: 'application/json; charset=utf-8',
+                    error: (jqXHR, textStatus, errorThrown) => {
+                        MessageToast.show(errorThrown);
+                    },
+                    success: (json) => {
+                        MessageToast.show("Submited.");
+                    }
+                });
+            }
         },
 
         handleLiveChange: function (oEvent) {
@@ -200,6 +192,8 @@ sap.ui.define([
             let finalHtml = `<div>${html}</div>`;
 
             this.HTML.setContent(finalHtml);
+
+            this.TextAreaChange = true;
         }
 
     });

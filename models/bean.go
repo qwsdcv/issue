@@ -136,3 +136,19 @@ func GetContent(id string) (ar Article, err error) {
 
 	return
 }
+
+//SetContent update DB with content.
+func SetContent(id, content string) (err error) {
+	con, err := sql.Open(DBName, ConnectString)
+	defer con.Close()
+	if err != nil {
+		return
+	}
+	intID, err := strconv.Atoi(id)
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+	_, err = con.Exec("update articles set content=? where id=?", content, intID)
+	return
+}

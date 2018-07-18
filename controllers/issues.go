@@ -61,3 +61,19 @@ func (c *IssueController) LoadContent() {
 
 	c.ServeJSON()
 }
+
+//SetContent set the content of the article ${id}.
+func (c *IssueController) SetContent() {
+	id := c.Ctx.Input.Param(":id")
+	var bean models.Article
+	err := json.Unmarshal(c.Ctx.Input.RequestBody, &bean)
+	if err != nil {
+		c.CustomAbort(500, err.Error())
+	}
+	err = models.SetContent(id, bean.Content)
+	if err != nil {
+		c.CustomAbort(500, err.Error())
+	}
+	c.Ctx.Output.Header("Content-Type", "application/json; charset=utf-8")
+	c.Ctx.Output.Body([]byte("{}"))
+}

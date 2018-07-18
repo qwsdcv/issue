@@ -5,7 +5,15 @@
 	xmlns="sap.m">
 	<SplitApp id="Split" initialDetail="detail" initialMaster="master" orientationChange="onOrientationChange">
 		<detailPages>
-			<Page id="detail" title="Detail">
+			<Page id="detail">
+				<headerContent>
+					<Toolbar>
+						<!--ToolbarSpacer /-->
+						<Button icon="sap-icon://accept" tooltip="Submit" press="setContent" class="sapUiTinyMarginBegin" />
+						<ToolbarSpacer />
+						<ToolbarSpacer />
+					</Toolbar>
+				</headerContent>
 				<content>
 					<l:VerticalLayout width="100%">
 						<l:BlockLayout background="Dashboard">
@@ -27,13 +35,13 @@
 				<subHeader>
 					<Toolbar>
 						<ToolbarSpacer id="Spacer" />
-						<Button icon="sap-icon://add-document" tooltip="写文字" press="newDocument"/>
-						<Button icon="sap-icon://add-folder" tooltip="新建文件夹" press="newFolder"/>
+						<Button icon="sap-icon://add-document" tooltip="NewFile" press="newDocument"/>
+						<Button icon="sap-icon://add-folder" tooltip="NewFolder" press="newFolder"/>
 					</Toolbar>
 				</subHeader>
 				<content>
 					<Tree id="catalog" selectionChange="selectionChange" items="{/}">
-						<StandardTreeItem title="{title}" icon="{icon}"/>
+						<StandardTreeItem title="{title}" icon="{path:'type',formatter:'.Formatter.getIcon'}"/>
 					</Tree>
 				</content>
 			</Page>
