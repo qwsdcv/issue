@@ -77,3 +77,28 @@ func (c *IssueController) SetContent() {
 	c.Ctx.Output.Header("Content-Type", "application/json; charset=utf-8")
 	c.Ctx.Output.Body([]byte("{}"))
 }
+
+//Login enter root mode, which means you can modify the contents.
+func (c *IssueController) Login() {
+	var secret login
+	err := json.Unmarshal(c.Ctx.Input.RequestBody, &secret)
+	if err != nil {
+		c.CustomAbort(500, err.Error())
+	}
+	if secret.Secret == beego.AppConfig.String("secret") {
+
+		token, err := models.CreateToken()
+		if err != nil {
+			c.CustomAbort(500, err.Error())
+		}
+		c.Ctx.Output.Header("Authorization", token)
+		c.Ctx.Output.Header("Content-Type", "application/json; charset=utf-8")
+		c.Ctx.Output.Body([]byte("{}"))
+	} else {
+		c.CustomAbort(401, "You cannot pass.")
+	}
+}
+
+type login struct {
+	Secret string `json:"secret"`
+}

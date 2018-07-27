@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Password</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
+<style>
+
+    body {
+        color: #666;
+        padding: 0;
+        margin: 0;
+    }
+
+    #container {
+        display: flex;
+        height: 100vh;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .login-body {
+        display: flex;
+        width: 256px;
+        padding: 10px;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        font-size: 12px;
+    }
+
+
+    input[type=password] {
+        width: 100%;
+        padding: 0.6rem;
+        margin: 0.6rem 0;
+        display: inline-box;
+        border: 1px solid #ccc;
+        font-size: 12px;
+        border-radius: 2px;
+    }
+
+    input[type=button] {
+        width: 100%;
+        background-color: rgba(61, 74, 75, 0.87);
+        height: 2.2rem;
+        border-radius: 0.2rem;
+        color: #fff;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+
+    input[type=button]:hover {
+        opacity: 0.6;
+    }
+
+    input[type=button]:disabled {
+        background: #dddddd;
+    }
+</style>
+
+<body>
+    <div id="container">
+
+            <div class="login-body">
+                <label><b>口令</b></label>
+                <input type="password" placeholder="口令" id="password" required>
+                <input type="button" name="login" id="login" value="之">
+            </div>
+
+    </div>
+</body>
+<script src="/static/js/login.js">
+</script>
+
+</html>

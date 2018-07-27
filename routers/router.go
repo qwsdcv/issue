@@ -12,4 +12,6 @@ func init() {
 	beego.Router("/issues/menu", &controllers.IssueController{}, "get:LoadMenu")
 	beego.Router("/issues/content/:id", &controllers.IssueController{}, "get:LoadContent")
 	beego.Router("/issues/content/:id", &controllers.IssueController{}, "post:SetContent")
+
+	beego.Router("/issues/secret", &controllers.IssueController{}, "post:Login")
 }

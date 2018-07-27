@@ -1,6 +1,10 @@
 # issue
 
 
+## Lib
+
+`go get github.com/dgrijalva/jwt-go`
+
 ## 备忘
 ### OpenUi5
 
