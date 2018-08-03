@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/astaxie/beego"
@@ -48,6 +49,9 @@ func Valid(tokenString string) (valid bool, err error) {
 //FilterLogin flter login
 func FilterLogin(ctx *context.Context) {
 	if ctx.Input.IsGet() {
+		return
+	}
+	if strings.Contains(ctx.Input.URL(), "secret") {
 		return
 	}
 
