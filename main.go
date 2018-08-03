@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "issues/models"
+	"issues/models"
 	_ "issues/routers"
 
 	"github.com/astaxie/beego"
@@ -9,5 +9,6 @@ import (
 
 func main() {
 	beego.SetStaticPath("/go", "views")
+	beego.InsertFilter("/*", beego.BeforeRouter, models.FilterLogin)
 	beego.Run()
 }

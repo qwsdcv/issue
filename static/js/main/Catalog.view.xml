@@ -9,7 +9,7 @@
 				<headerContent>
 					<Toolbar>
 						<!--ToolbarSpacer /-->
-						<Button icon="sap-icon://accept" tooltip="Submit" press="setContent" class="sapUiTinyMarginBegin" />
+						<Button icon="sap-icon://accept" tooltip="Submit" press="setContent" class="sapUiTinyMarginBegin" visible="{path:'',formatter:'.isEditMode'}"/>
 						<ToolbarSpacer />
 						<ToolbarSpacer />
 					</Toolbar>
@@ -18,7 +18,7 @@
 					<l:VerticalLayout width="100%">
 						<l:BlockLayout background="Dashboard">
 							<l:BlockLayoutRow>
-								<l:BlockLayoutCell>
+								<l:BlockLayoutCell visible="{path:'',formatter:'.isEditMode'}">
 									<TextArea id="TypeHere" rows="100" width="100%" valueLiveUpdate="true" liveChange="handleLiveChange" growing="true" wrapping="None"/>
 								</l:BlockLayoutCell>
 								<l:BlockLayoutCell>
@@ -35,8 +35,8 @@
 				<subHeader>
 					<Toolbar>
 						<ToolbarSpacer id="Spacer" />
-						<Button icon="sap-icon://add-document" tooltip="NewFile" press="newDocument"/>
-						<Button icon="sap-icon://add-folder" tooltip="NewFolder" press="newFolder"/>
+						<Button icon="sap-icon://add-document" tooltip="NewFile" press="newDocument" visible="{path:'',formatter:'.isEditMode'}"/>
+						<Button icon="sap-icon://add-folder" tooltip="NewFolder" press="newFolder" visible="{path:'',formatter:'.isEditMode'}"/>
 					</Toolbar>
 				</subHeader>
 				<content>

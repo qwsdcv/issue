@@ -13,6 +13,12 @@ sap.ui.define([
         Formatter: Formatter,
 
         onInit: function () {
+            this.Token = this.getParameterByName('token');
+            $.ajaxSetup({
+                headers: {
+                    "Authorization": this.Token
+                }
+            });
             jQuery.sap.includeStyleSheet("/static/css/Custom.css");
 
             this.Split = this.byId("Split");
@@ -38,6 +44,14 @@ sap.ui.define([
             this.Converter.setOption('tasklists', true);
             this.Converter.setOption('emoji', true);
             this.Converter.setOption('underline', true);
+        },
+        getParameterByName: function (name) {
+            var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.href);
+            return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+        },
+
+        isEditMode() {
+            return this.Token != null;
         },
 
         newDocument: function (event) {
@@ -135,9 +149,8 @@ sap.ui.define([
             let currentPath = this.CurrentSelected.getBindingContextPath();
             let obj = this.JsonModel.getObject(currentPath);
 
-            if (obj.type == Formatter.DOCUMENT) {
-                this.getContent(obj.id);
-            }
+
+            this.getContent(obj.id);
         },
 
         getContent: function (id) {
@@ -156,7 +169,7 @@ sap.ui.define([
                     that.CurrentContentBinding = json;
                     let text = json.content;
                     that.TextArea.setValue(text);
-                    that.TextArea.fireLiveChange({value:text});
+                    that.TextArea.fireLiveChange({ value: text });
                     detailPage.setBusy(false);
                 }
             });

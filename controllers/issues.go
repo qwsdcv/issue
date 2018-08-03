@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"issues/models"
 
 	"github.com/astaxie/beego"
@@ -54,8 +55,16 @@ func (c *IssueController) AddMenu() {
 func (c *IssueController) LoadContent() {
 	id := c.Ctx.Input.Param(":id")
 	obj, err := models.GetContent(id)
+
 	if err != nil {
 		c.CustomAbort(500, err.Error())
+	}
+	if obj.Content == "" {
+		buff, err := ioutil.ReadFile("Profile.md")
+		if err != nil {
+			c.CustomAbort(500, err.Error())
+		}
+		obj.Content = string(buff)
 	}
 	c.Data["json"] = obj
 
@@ -91,9 +100,12 @@ func (c *IssueController) Login() {
 		if err != nil {
 			c.CustomAbort(500, err.Error())
 		}
-		c.Ctx.Output.Header("Authorization", token)
-		c.Ctx.Output.Header("Content-Type", "application/json; charset=utf-8")
-		c.Ctx.Output.Body([]byte("{}"))
+		c.Ctx.Output.Header("Authorization", "Basic "+token)
+		var target jump
+		target.Target = "index.html"
+		c.Data["json"] = target
+		c.ServeJSON()
+
 	} else {
 		c.CustomAbort(401, "You cannot pass.")
 	}
@@ -101,4 +113,8 @@ func (c *IssueController) Login() {
 
 type login struct {
 	Secret string `json:"secret"`
+}
+
+type jump struct {
+	Target string `json:"target"`
 }

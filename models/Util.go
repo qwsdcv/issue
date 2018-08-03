@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/context"
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
@@ -42,4 +43,26 @@ func Valid(tokenString string) (valid bool, err error) {
 	}
 
 	return
+}
+
+//FilterLogin flter login
+func FilterLogin(ctx *context.Context) {
+	if ctx.Input.IsGet() {
+		return
+	}
+
+	token := ctx.Input.Header("Authorization")
+
+	if token == "" {
+		ctx.Abort(401, "Not Authorizd")
+	} else {
+		token = token[len("Basic ")+1:]
+	}
+	ok, err := Valid(token)
+	if err != nil {
+		ctx.Abort(500, err.Error())
+	}
+	if !ok {
+		ctx.Abort(401, "Not Authorizd")
+	}
 }
