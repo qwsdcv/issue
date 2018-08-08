@@ -60,7 +60,7 @@ func FilterLogin(ctx *context.Context) {
 	if token == "" {
 		ctx.Abort(401, "Not Authorizd")
 	} else {
-		token = token[len("Basic ")+1:]
+		token = token[len("Basic "):]
 	}
 	ok, err := Valid(token)
 	if err != nil {
