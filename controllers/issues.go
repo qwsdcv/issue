@@ -54,18 +54,29 @@ func (c *IssueController) AddMenu() {
 //LoadContent handle get request and return content info as JSON
 func (c *IssueController) LoadContent() {
 	id := c.Ctx.Input.Param(":id")
-	obj, err := models.GetContent(id)
-
-	if err != nil {
-		c.CustomAbort(500, err.Error())
-	}
-	if obj.Content == "" {
+	var obj models.Article
+	if id == "default" {
 		buff, err := ioutil.ReadFile("Profile.md")
 		if err != nil {
 			c.CustomAbort(500, err.Error())
 		}
 		obj.Content = string(buff)
+	} else {
+		var err error
+		obj, err = models.GetContent(id)
+
+		if err != nil {
+			c.CustomAbort(500, err.Error())
+		}
+		if obj.Content == "" {
+			buff, errFile := ioutil.ReadFile("Profile.md")
+			if errFile != nil {
+				c.CustomAbort(500, errFile.Error())
+			}
+			obj.Content = string(buff)
+		}
 	}
+
 	c.Data["json"] = obj
 
 	c.ServeJSON()

@@ -44,6 +44,8 @@ sap.ui.define([
             this.Converter.setOption('tasklists', true);
             this.Converter.setOption('emoji', true);
             this.Converter.setOption('underline', true);
+
+            this.getContent('default');
         },
         getParameterByName: function (name) {
             var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.href);
@@ -177,7 +179,7 @@ sap.ui.define([
 
         setContent: function () {
 
-            if (this.TextAreaChange && this.CurrentContentBinding) {
+            if (this.TextAreaChange && this.CurrentContentBinding && this.CurrentContentBinding.id) {
                 let text = this.TextArea.getValue();
                 this.CurrentContentBinding.content = text;
                 $.ajax({
