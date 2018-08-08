@@ -9,7 +9,12 @@ type MainController struct {
 	beego.Controller
 }
 
-//Get get request.
-func (c *MainController) Get() {
+//GetIndex get request.
+func (c *MainController) GetIndex() {
 	c.TplName = "index.html"
+}
+
+//GetLogin get request.
+func (c *MainController) GetLogin() {
+	c.TplName = "login.html"
 }

@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	beego.SetStaticPath("/go", "views")
+	beego.SetViewsPath("static")
 	beego.InsertFilter("/*", beego.BeforeRouter, models.FilterLogin)
 	beego.Run()
 }
