@@ -5,7 +5,7 @@
 	xmlns="sap.m">
 	<SplitApp id="Split" initialDetail="detail" initialMaster="master" orientationChange="onOrientationChange">
 		<detailPages>
-			<Page id="detail" showNavButton="true" navButtonText="Back" navButtonPress="onPressDetailBack">
+			<Page id="detail" showNavButton="true" navButtonText="Back" navButtonPress="go2Master">
 				<headerContent>
 					<Toolbar>
 						<!--ToolbarSpacer /-->
@@ -41,7 +41,7 @@
 				</subHeader>
 				<content>
 					<Tree id="catalog" selectionChange="selectionChange" items="{/}">
-						<StandardTreeItem title="{title}" icon="{path:'type',formatter:'.Formatter.getIcon'}"/>
+						<StandardTreeItem title="{title}" press="go2Detail" icon="{path:'type',formatter:'.Formatter.getIcon'}"/>
 					</Tree>
 				</content>
 			</Page>

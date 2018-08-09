@@ -147,10 +147,13 @@ sap.ui.define([
                 }
             });
         },
-        selectionChange: function (oEvent) {
+        go2Detail: function () {
             if (this.Split) {
-                this.Split.to("detail");
+                this.Split.toDetail(this.createId("detail"));
             }
+        },
+        selectionChange: function (oEvent) {
+            this.go2Detail();
             var iItem = oEvent.getParameter("listItem");
             this.CurrentSelected = iItem/*.getBindingContextPath()*/;
             let currentPath = this.CurrentSelected.getBindingContextPath();
@@ -203,9 +206,9 @@ sap.ui.define([
             }
         },
 
-        onPressDetailBack: function () {
+        go2Master: function () {
             if (this.Split) {
-                this.Split.to("master");
+                this.Split.to(this.createId("master"));
             }
         },
 
