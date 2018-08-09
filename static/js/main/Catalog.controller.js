@@ -119,6 +119,7 @@ sap.ui.define([
                 contentType: 'application/json; charset=utf-8',
                 error: (jqXHR, textStatus, errorThrown) => {
                     MessageToast.show(textStatus);
+                    this.Tree.setBusy(false);
                 },
                 success: (json) => {
                     that.getView().getModel().setData(json)
@@ -137,6 +138,7 @@ sap.ui.define([
                 contentType: 'application/json; charset=utf-8',
                 error: (jqXHR, textStatus, errorThrown) => {
                     MessageToast.show(textStatus);
+                    this.Tree.setBusy(false);
                 },
                 data: JSON.stringify(data),
                 success: (json) => {

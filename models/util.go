@@ -20,7 +20,7 @@ func CreateToken() (tokenStr string, err error) {
 	key := beego.AppConfig.String("private_key")
 	keyBuff := []byte(key)
 	claims := &jwt.StandardClaims{
-		ExpiresAt: 10,
+		ExpiresAt: 60*10 + time.Now().Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenStr, err = token.SignedString(keyBuff)
