@@ -148,6 +148,9 @@ sap.ui.define([
             });
         },
         selectionChange: function (oEvent) {
+            if (this.Split) {
+                this.Split.to("detail");
+            }
             var iItem = oEvent.getParameter("listItem");
             this.CurrentSelected = iItem/*.getBindingContextPath()*/;
             let currentPath = this.CurrentSelected.getBindingContextPath();
@@ -200,8 +203,8 @@ sap.ui.define([
             }
         },
 
-        onPressDetailBack: function(){
-            if(this.Split){
+        onPressDetailBack: function () {
+            if (this.Split) {
                 this.Split.to("master");
             }
         },
