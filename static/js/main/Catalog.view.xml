@@ -5,7 +5,7 @@
 	xmlns="sap.m">
 	<SplitApp id="Split" initialDetail="detail" initialMaster="master" orientationChange="onOrientationChange">
 		<detailPages>
-			<Page id="detail">
+			<Page id="detail" showNavButton="true" navButtonText="Back" navButtonPress="onPressDetailBack">
 				<headerContent>
 					<Toolbar>
 						<!--ToolbarSpacer /-->

@@ -200,6 +200,12 @@ sap.ui.define([
             }
         },
 
+        onPressDetailBack: function(){
+            if(this.Split){
+                this.Split.to("master");
+            }
+        },
+
         handleLiveChange: function (oEvent) {
             let sValue = oEvent.getParameter("value");
             jQuery.sap.log.info(sValue);
