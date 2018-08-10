@@ -13,13 +13,6 @@ sap.ui.define([
         Formatter: Formatter,
 
         onInit: function () {
-            this.Token = this.getParameterByName('token');
-            $.ajaxSetup({
-                headers: {
-                    "Authorization": this.Token
-                }
-            });
-            jQuery.sap.includeStyleSheet("/static/css/Custom.css");
 
             this.Split = this.byId("Split");
             this.Tree = this.byId("catalog");
@@ -53,7 +46,12 @@ sap.ui.define([
         },
 
         isEditMode() {
-            return this.Token != null;
+            try {
+                let token = $.ajaxSetup()['headers']['Authorization'];
+                return token != null;
+            } catch (error) {
+                return false;
+            }
         },
 
         newDocument: function (event) {

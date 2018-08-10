@@ -16,6 +16,8 @@ dep ensure
 
 添加上`data-sap-ui-bindingSyntax="complex"`在html，否则不能使用formatter
 
+SplitApp ， to/toDetail/toMaster 必须用 this.createId(id) 创建id作参数，否则不work
+
 ### 交叉编译
 
 在windows上

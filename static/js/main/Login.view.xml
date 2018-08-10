@@ -1,0 +1,18 @@
+
+<mvc:View 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.m" controllerName="i.main.Login">
+	<App id="root">
+		<Page title="Secret Area">
+			<content>
+				<VBox class="sapUiResponsiveContentPadding" height='100%' justifyContent ='Center' width='100%' alignContent='Inherit' alignItems='Center'>
+					<items>
+						<Label text="口令" textAlign='Center' />
+						<Input id="passwordInput" type="Password" placeholder="口令" />
+						<Button text="之" type="Accept" press="buttonClick" />
+					</items>
+				</VBox>
+			</content>
+		</Page>
+	</App>
+</mvc:View>
