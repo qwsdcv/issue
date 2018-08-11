@@ -63,6 +63,17 @@ check "go build failed"
 
 }
 
+installMariaDB(){
+out "INSTALL mariaDB"
+apt-get install  mariadb-server
+check "install mariadb failed"
+cd $GOROOT/src/issues/models
+sh SYSTEM.sh
+check "CREATE DB failed"
+sh SQL.sh
+check "CREATE TABLE failed"
+}
+
 installSuperVisor(){
 out "INSTALL supervisor"
 apt-get install supervisor
@@ -74,4 +85,5 @@ service supervisor restart
 installSystem
 installGolang
 buildIssues
+installMariaDB
 installSuperVisor
