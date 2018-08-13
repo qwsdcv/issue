@@ -1,23 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 GOROOT=/home/go
 
-check(){
-if [ $? -eq 0 ];then
-echo "OK"
-else
-if [ -n "$1" ];then
-echo $1
-else
-echo "Error"
-fi
-exit -1
-fi
-}
-
-out(){
-echo "$(tput setab 7)$1$(tput sgr 0)"
-}
+source ./common.sh
 
 installSystem(){
 out "INSTALL git"
@@ -78,12 +63,25 @@ installSuperVisor(){
 out "INSTALL supervisor"
 apt-get install supervisor
 check "install supervisor error"
-echo "[program:issues]\ndirectory=${GOROOT}/src/issues\ncommand=${GOROOT}/src/issues/issues\nautostart=true\nstderr_logfile=${GOROOT}/src/issues/out.log\nstdout_logfile=${GOROOT}/src/issues/out.log\n" > /etc/supervisor/conf.d/issues.conf
+echo -e "[program:issues]\ndirectory=${GOROOT}/src/issues\ncommand=${GOROOT}/src/issues/issues\nautostart=true\nstderr_logfile=${GOROOT}/src/issues/out.log\nstdout_logfile=${GOROOT}/src/issues/out.log\n" > /etc/supervisor/conf.d/issues.conf
 service supervisor restart
 }
+
+installNginx(){
+    out "INSTALL nginx"
+    apt-get install nginx
+    check "install nginx error"
+    out "config nginx"
+    echo -e "server {\n    listen 80;\n    server_name gushijingcai.com;\n\n    location / {\n        root /home/go/src/issues/static;\n        index index.html;\n    }\n\n    location ^~ /issues/ {\n        proxy_pass http://127.0.0.1:8088;\n    }\n}\n" > /etc/nginx/conf.d/issues.conf
+    nginx -s reload
+    check "nginx reload error"
+}
+
+
 
 installSystem
 installGolang
 buildIssues
 installMariaDB
 installSuperVisor
+installNginx
