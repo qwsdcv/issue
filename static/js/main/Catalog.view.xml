@@ -25,6 +25,19 @@
 									<core:HTML id="PreviewHere"/>
 								</l:BlockLayoutCell>
 							</l:BlockLayoutRow>
+							<l:BlockLayoutRow>
+								<l:BlockLayoutCell>
+									<VBox id='commentStuff'>
+										<TextArea id="TypeComment" rows="4" width="100%" growing="true" wrapping="None"/>
+										<HBox>
+											<Button id='commentButton' text="评论" type='Ghost' press='addComment'/>
+										</HBox>
+										<List id="Comments" items="{/comments}" headerText="评论" growing="true" growingThreshold="10" growingScrollToLoad="false" noDataText="没有评论">
+											<StandardListItem title="{content}" description="{content}" />
+										</List>
+									</VBox>
+								</l:BlockLayoutCell>
+							</l:BlockLayoutRow>
 						</l:BlockLayout>
 					</l:VerticalLayout>
 				</content>
@@ -40,7 +53,7 @@
 					</Toolbar>
 				</subHeader>
 				<content>
-					<Tree id="catalog" selectionChange="selectionChange" items="{/}">
+					<Tree id="catalog" selectionChange="selectionChange" items="{/catalogs}">
 						<StandardTreeItem title="{title}" press="go2Detail" icon="{path:'type',formatter:'.Formatter.getIcon'}"/>
 					</Tree>
 				</content>

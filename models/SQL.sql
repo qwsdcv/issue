@@ -17,5 +17,5 @@ CREATE TABLE IF NOT EXISTS comments(
     ip int NOT NULL,
     content text NOT NULL,
     create_date datetime NOT NULL,
-    foreign key(id) references articles(id)
+    foreign key(articleid) references articles(id)
 );

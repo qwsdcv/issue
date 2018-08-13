@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-//Article is a Go bean
+//Article is a Go bean for table articles
 type Article struct {
 	ID         int       `json:"id"`
 	ParentID   int       `json:"parent_id"`
@@ -18,6 +18,16 @@ type Article struct {
 	Content    string    `json:"content"`
 	Visits     string    `json:"visits"`
 	Data       []Article `json:"nodes"`
+}
+
+//Comment is a Go bean for table comments
+type Comment struct {
+	ID         int    `json:"id"`
+	ArticleID  int    `json:"parent_id"`
+	NickName   string `json:"nick_name"`
+	IP         string `json:"ip"`
+	Content    string `json:"content"`
+	CreateDate string `json:"date"`
 }
 
 var (
@@ -36,6 +46,26 @@ func (ar *Article) AddMenu() (ret error) {
 	t := FormatTime(&tm)
 
 	rs, err := con.Exec("INSERT INTO articles(parent_id,title,create_date,type) VALUES(?,?,?,?)", ar.ParentID, ar.Title, t, ar.Type)
+	if err != nil {
+		log.Println(err.Error())
+		ret = err
+	}
+	log.Println(rs)
+	ret = nil
+	return
+}
+
+//AddComment add comment to DB
+func (one *Comment) AddComment() (ret error) {
+	con, err := sql.Open(DBName, ConnectString)
+	defer con.Close()
+	if err != nil {
+		ret = err
+	}
+	tm := time.Now()
+	t := FormatTime(&tm)
+
+	rs, err := con.Exec("INSERT INTO comments(articleid,nick_name,ip,content,create_date) VALUES(?,?,?,?,?)", one.ArticleID, one.NickName, one.IP, one.Content, t)
 	if err != nil {
 		log.Println(err.Error())
 		ret = err
@@ -150,5 +180,36 @@ func SetContent(id, content string) (err error) {
 		return
 	}
 	_, err = con.Exec("update articles set content=? where id=?", content, intID)
+	return
+}
+
+//GetComment return Comment as Array
+func GetComment(articleID string) (jsonObj []Comment, err error) {
+	con, err := sql.Open(DBName, ConnectString)
+	defer con.Close()
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+	rows, err := con.Query("select id,nick_name,ip,content,create_date from comments where articleid=? order by create_date desc", articleID)
+	defer rows.Close()
+	if err != nil {
+		return
+	}
+	retArray := make([]Comment, 0, 64)
+	for rows.Next() {
+		t := new(time.Time)
+		one := new(Comment)
+		err = rows.Scan(&one.ID, &one.NickName, &one.IP, &one.Content, &t)
+		if err != nil {
+			log.Println(err.Error())
+			return
+		}
+		one.CreateDate = FormatTime(t)
+		retArray = append(retArray, *one)
+	}
+
+	jsonObj = retArray
+
 	return
 }

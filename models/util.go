@@ -54,6 +54,9 @@ func FilterLogin(ctx *context.Context) {
 	if strings.Contains(ctx.Input.URL(), "secret") {
 		return
 	}
+	if strings.Contains(ctx.Input.URL(), "comment") {
+		return
+	}
 
 	token := ctx.Input.Header("Authorization")
 

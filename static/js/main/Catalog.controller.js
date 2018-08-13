@@ -37,8 +37,6 @@ sap.ui.define([
             this.Converter.setOption('tasklists', true);
             this.Converter.setOption('emoji', true);
             this.Converter.setOption('underline', true);
-
-            this.getContent('default');
         },
         getParameterByName: function (name) {
             var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.href);
@@ -120,7 +118,11 @@ sap.ui.define([
                     this.Tree.setBusy(false);
                 },
                 success: (json) => {
-                    that.getView().getModel().setData(json)
+                    that.getView().getModel().setData({ catalogs: json }, true)
+                    if (json.length > 0) {
+                        let initId = json[0].id;
+                        that.getContent(initId);
+                    }
                     this.Tree.setBusy(false);
                 }
             });
@@ -140,11 +142,63 @@ sap.ui.define([
                 },
                 data: JSON.stringify(data),
                 success: (json) => {
-                    that.getView().getModel().setData(json)
+                    that.getView().getModel().setData({ catalogs: json }, true);
                     this.Tree.setBusy(false);
                 }
             });
         },
+
+        getComment: function () {
+            let that = this;
+            let commentStuff = this.byId('commentStuff');
+
+            $.ajax({
+                url: '/issues/comment/' + this.CurrentContentBinding.id,
+                method: 'GET',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                error: (jqXHR, textStatus, errorThrown) => {
+                    MessageToast.show(textStatus);
+                    commentStuff.setBusy(false);
+                },
+                success: (json) => {
+                    that.getView().getModel().setData({ comments: json }, true);
+                    commentStuff.setBusy(false);
+                }
+            });
+        },
+
+        addComment: function () {
+            let commentStuff = this.byId('commentStuff');
+            commentStuff.setBusy(true);
+            let commentText = this.byId('TypeComment').getValue();
+            this.byId('TypeComment').setValue('');
+            if (commentText && commentText != '' && commentText.trim() != '') {
+                let data = {
+                    parent_id: this.CurrentContentBinding.id,
+                    content: commentText
+                };
+                let that = this;
+                $.ajax({
+                    url: '/issues/comment' /*+ this.CurrentContentBinding.id*/,
+                    method: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    error: (jqXHR, textStatus, errorThrown) => {
+                        MessageToast.show(textStatus);
+                        commentStuff.setBusy(false);
+                    },
+                    data: JSON.stringify(data),
+                    success: (json) => {
+                        that.getView().getModel().setData({ comments: json }, true);
+                        commentStuff.setBusy(false);
+                    }
+                });
+            } else {
+                MessageToast.show('不要评论空');
+            }
+        },
+
         go2Detail: function () {
             if (this.Split) {
                 this.Split.toDetail(this.createId("detail"));
@@ -172,9 +226,11 @@ sap.ui.define([
                 contentType: 'application/json; charset=utf-8',
                 error: (jqXHR, textStatus, errorThrown) => {
                     MessageToast.show(textStatus);
+                    detailPage.setBusy(false);
                 },
                 success: (json) => {
                     that.CurrentContentBinding = json;
+                    this.getComment(id);
                     let text = json.content;
                     that.TextArea.setValue(text);
                     that.TextArea.fireLiveChange({ value: text });
