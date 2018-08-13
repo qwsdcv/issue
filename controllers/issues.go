@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"issues/models"
+	"strconv"
 
 	"github.com/astaxie/beego"
 
@@ -128,4 +129,39 @@ type login struct {
 
 type jump struct {
 	Target string `json:"target"`
+}
+
+//GetComment return comments
+func (c *IssueController) GetComment() {
+	articleID := c.Ctx.Input.Param(":id")
+	obj, err := models.GetComment(articleID)
+	if err != nil {
+		c.CustomAbort(500, err.Error())
+	}
+	c.Data["json"] = obj
+	c.ServeJSON()
+}
+
+//AddComment handle post request
+func (c *IssueController) AddComment() {
+	log.Println(c.Ctx.Input.RequestBody)
+
+	var bean models.Comment
+	err := json.Unmarshal(c.Ctx.Input.RequestBody, &bean)
+	if err != nil {
+		c.CustomAbort(500, err.Error())
+	}
+	log.Printf("%s", c.Ctx.Input.URL())
+	bean.IP = c.Ctx.Input.IP()
+
+	err = bean.AddComment()
+	if err != nil {
+		c.CustomAbort(500, err.Error())
+	}
+	obj, err := models.GetComment(strconv.Itoa(bean.ArticleID))
+	if err != nil {
+		c.CustomAbort(500, err.Error())
+	}
+	c.Data["json"] = obj
+	c.ServeJSON()
 }
