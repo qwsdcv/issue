@@ -33,7 +33,28 @@
 											<Button id='commentButton' text="评论" type='Ghost' press='addComment'/>
 										</HBox>
 										<List id="Comments" items="{/comments}" headerText="评论" growing="true" growingThreshold="10" growingScrollToLoad="false" noDataText="没有评论">
-											<StandardListItem title="{content}" description="{content}" />
+											<CustomListItem>
+												<l:Grid defaultSpan="L4 M12 S12">
+													<l:content>
+														<Label class="CommentName" displayOnly='true' design='Bold' text="{parts : ['nick_name', 'ip'], formatter:'.getNickName'}">
+															<layoutData>
+																<l:GridData span="L10 M10 S10"/>
+															</layoutData>
+														</Label>
+														<Label class="CommentTime sapUiSmallMarginTop" displayOnly='true' text="{date}">
+															<layoutData>
+																<l:GridData span="L2 M2 S2"/>
+															</layoutData>
+														</Label>
+														<VBox>
+															<core:HTML content="{path:'content', formatter:'.getMarkDown'}"/>
+															<layoutData>
+																<l:GridData span="L12 M12 S12"/>
+															</layoutData>
+														</VBox>
+													</l:content>
+												</l:Grid>
+											</CustomListItem>
 										</List>
 									</VBox>
 								</l:BlockLayoutCell>

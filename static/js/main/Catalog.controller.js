@@ -162,7 +162,7 @@ sap.ui.define([
                     commentStuff.setBusy(false);
                 },
                 success: (json) => {
-                    that.getView().getModel().setData({ comments: json }, true);
+                    that.getView().getModel().setProperty('/comments', json);
                     commentStuff.setBusy(false);
                 }
             });
@@ -170,10 +170,10 @@ sap.ui.define([
 
         addComment: function () {
             let commentStuff = this.byId('commentStuff');
-            commentStuff.setBusy(true);
             let commentText = this.byId('TypeComment').getValue();
             this.byId('TypeComment').setValue('');
             if (commentText && commentText != '' && commentText.trim() != '') {
+                commentStuff.setBusy(true);
                 let data = {
                     parent_id: this.CurrentContentBinding.id,
                     content: commentText
@@ -190,7 +190,7 @@ sap.ui.define([
                     },
                     data: JSON.stringify(data),
                     success: (json) => {
-                        that.getView().getModel().setData({ comments: json }, true);
+                        that.getView().getModel().setProperty('/comments', json);
                         commentStuff.setBusy(false);
                     }
                 });
@@ -266,9 +266,22 @@ sap.ui.define([
             }
         },
 
+        getNickName: function (nick, ip) {
+            if (nick && nick.trim()) {
+                return nick;
+            } else {
+                return ip;
+            }
+        },
+        getMarkDown: function (content) {
+            let converter = this.Converter;
+            let html = converter.makeHtml(content);
+            let finalHtml = `<div>${html}</div>`;
+            return finalHtml;
+        },
+
         handleLiveChange: function (oEvent) {
             let sValue = oEvent.getParameter("value");
-            jQuery.sap.log.info(sValue);
 
             let converter = this.Converter;
             let html = converter.makeHtml(sValue);
