@@ -172,11 +172,13 @@ sap.ui.define([
             let commentStuff = this.byId('commentStuff');
             let commentText = this.byId('TypeComment').getValue();
             this.byId('TypeComment').setValue('');
+            let nickName = this.byId('nickNameInput').getValue();
             if (commentText && commentText != '' && commentText.trim() != '') {
                 commentStuff.setBusy(true);
                 let data = {
                     parent_id: this.CurrentContentBinding.id,
-                    content: commentText
+                    content: commentText,
+                    nick_name: nickName
                 };
                 let that = this;
                 $.ajax({
@@ -266,11 +268,11 @@ sap.ui.define([
             }
         },
 
-        getNickName: function (nick, ip) {
+        getNickName: function (nick) {
             if (nick && nick.trim()) {
                 return nick;
             } else {
-                return ip;
+                return "匿名";
             }
         },
         getMarkDown: function (content) {
@@ -278,6 +280,9 @@ sap.ui.define([
             let html = converter.makeHtml(content);
             let finalHtml = `<div>${html}</div>`;
             return finalHtml;
+        },
+        isMobile: function () {
+            return sap.ui.Device.browser.mobile;
         },
 
         handleLiveChange: function (oEvent) {
