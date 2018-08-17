@@ -151,6 +151,11 @@ func GetContent(id string) (ar Article, err error) {
 		log.Println(err.Error())
 		return
 	}
+	_, err = con.Exec("update articles set visits=visits+1 where id=?", intID)
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
 	rows := con.QueryRow("select id,parent_id,title,create_date,type,content,visits from articles where id=?", intID)
 	t := new(time.Time)
 	var content sql.NullString

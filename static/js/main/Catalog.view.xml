@@ -13,6 +13,11 @@
 						<Button icon="sap-icon://accept" tooltip="Submit" press="setContent" class="sapUiTinyMarginBegin" visible="{path:'',formatter:'.isEditMode'}"/>
 						<ToolbarSpacer />
 						<ToolbarSpacer />
+						<ToolbarSpacer />
+						<ToolbarSpacer />
+						<Label class="CommentTime" wrapping="true" displayOnly='true' text="访问:{/content/visits}"/>
+						<ToolbarSpacer />
+						<Label class="CommentTime" wrapping="true" displayOnly='true' text="{/content/date}"/>
 					</Toolbar>
 				</headerContent>
 				<content>

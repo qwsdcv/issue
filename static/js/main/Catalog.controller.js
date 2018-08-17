@@ -151,9 +151,9 @@ sap.ui.define([
         getComment: function () {
             let that = this;
             let commentStuff = this.byId('commentStuff');
-
+            let CurrentContentBinding = this.getView().getModel().getProperty('/content');
             $.ajax({
-                url: '/issues/comment/' + this.CurrentContentBinding.id,
+                url: '/issues/comment/' + CurrentContentBinding.id,
                 method: 'GET',
                 dataType: 'json',
                 contentType: 'application/json; charset=utf-8',
@@ -173,16 +173,18 @@ sap.ui.define([
             let commentText = this.byId('TypeComment').getValue();
             this.byId('TypeComment').setValue('');
             let nickName = this.byId('nickNameInput').getValue();
+            let CurrentContentBinding = this.getView().getModel().getProperty('/content');
+
             if (commentText && commentText != '' && commentText.trim() != '') {
                 commentStuff.setBusy(true);
                 let data = {
-                    parent_id: this.CurrentContentBinding.id,
+                    parent_id: CurrentContentBinding.id,
                     content: commentText,
                     nick_name: nickName
                 };
                 let that = this;
                 $.ajax({
-                    url: '/issues/comment' /*+ this.CurrentContentBinding.id*/,
+                    url: '/issues/comment' /*+ CurrentContentBinding.id*/,
                     method: 'POST',
                     dataType: 'json',
                     contentType: 'application/json; charset=utf-8',
@@ -231,7 +233,7 @@ sap.ui.define([
                     detailPage.setBusy(false);
                 },
                 success: (json) => {
-                    that.CurrentContentBinding = json;
+                    that.getView().getModel().setProperty('/content', json);
                     this.getComment(id);
                     let text = json.content;
                     that.TextArea.setValue(text);
@@ -242,15 +244,15 @@ sap.ui.define([
         },
 
         setContent: function () {
-
-            if (this.TextAreaChange && this.CurrentContentBinding && this.CurrentContentBinding.id) {
+            let CurrentContentBinding = this.getView().getModel().getProperty('/content');
+            if (this.TextAreaChange && CurrentContentBinding && CurrentContentBinding.id) {
                 let text = this.TextArea.getValue();
-                this.CurrentContentBinding.content = text;
+                CurrentContentBinding.content = text;
                 $.ajax({
-                    url: 'issues/content/' + this.CurrentContentBinding.id,
+                    url: 'issues/content/' + CurrentContentBinding.id,
                     method: 'POST',
                     dataType: 'json',
-                    data: JSON.stringify(this.CurrentContentBinding),
+                    data: JSON.stringify(CurrentContentBinding),
                     contentType: 'application/json; charset=utf-8',
                     error: (jqXHR, textStatus, errorThrown) => {
                         MessageToast.show(errorThrown);
