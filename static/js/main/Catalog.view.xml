@@ -53,9 +53,9 @@
 																<l:GridData span="L10 M10 S10"/>
 															</layoutData>
 														</Label>
-														<Label class="CommentTime sapUiSmallMarginTop" displayOnly='true' text="{date}">
+														<Label class="CommentTime sapUiSmallMarginTop" wrapping="true" displayOnly='true' text="{date}">
 															<layoutData>
-																<l:GridData span="L2 M2 S2"/>
+																<l:GridData span="L2 M2 S4"/>
 															</layoutData>
 														</Label>
 														<VBox>
