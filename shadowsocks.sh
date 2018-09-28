@@ -21,7 +21,7 @@ echo "
 
 echo -e "
 [program:shadowsocks]
-directory=/home/go/src/issues
+directory=/
 command=ssserver -c $SSCONFIG start
 autostart=true
 stderr_logfile=~/ss.log
