@@ -22,7 +22,7 @@ installGolang(){
 
     out "Setting environment variable";
     mkdir -p $GOROOT/src;
-    echo "export GOPATH=$GOROOT\nexport PATH=\$PATH:${GOROOT}/bin:/usr/local/go/bin" > /etc/profile.d/go.sh;
+    echo -e "export GOPATH=$GOROOT\nexport PATH=\$PATH:${GOROOT}/bin:/usr/local/go/bin" > /etc/profile.d/go.sh;
     . /etc/profile.d/go.sh;
 }
 
