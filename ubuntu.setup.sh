@@ -1,6 +1,7 @@
 #!/bin/bash
 
 GOROOT=/home/go
+GOVERSION=1.10
 
 source ./common.sh
 
@@ -11,18 +12,19 @@ installSystem(){
 }
 
 installGolang(){
+    rm -rf /usr/local/go;
     out "INSTALL golang";
-#apt-get install golang-go;
-    mkdir -p /tmp/golang;
-    cd /tmp/golang;
-    wget https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz;
-    check "Get go package from https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz failed.";
-    tar -C /usr/local -xzf go1.10.3.linux-amd64.tar.gz;
-    rm -rf /tmp/golang;
+    apt-get install golang-${GOVERSION}
+#    mkdir -p /tmp/golang;
+#    cd /tmp/golang;
+#    wget https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz;
+#    check "Get go package from https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz failed.";
+#    tar -C /usr/local -xzf go1.10.3.linux-amd64.tar.gz;
+#    rm -rf /tmp/golang;
 
     out "Setting environment variable";
     mkdir -p $GOROOT/src;
-    echo -e "export GOPATH=$GOROOT\nexport PATH=\$PATH:${GOROOT}/bin:/usr/local/go/bin" > /etc/profile.d/go.sh;
+    echo -e "export GOPATH=$GOROOT\nexport PATH=\$PATH:${GOROOT}/bin" > /etc/profile.d/go.sh;
     . /etc/profile.d/go.sh;
 }
 
@@ -33,8 +35,10 @@ buildIssues(){
     go get -u github.com/golang/dep/cmd/dep;
     check "install go dep error";
     cd $GOROOT/src;
-    git clone https://github.com/qwsdcv/issues.git;
+    if [ ! -d "issue" ];then
+    git clone --depth=1 https://github.com/qwsdcv/issues.git;
     check "git clone error";
+    fi
     cd issues;
     dep init;
     check "dep init error";
@@ -48,16 +52,16 @@ buildIssues(){
 
 }
 
-installMariaDB(){
-    out "INSTALL mariaDB";
-    apt-get install  mariadb-server;
-    check "install mariadb failed";
-    cd $GOROOT/src/issues/models;
-    sh SYSTEM.sh;
-    check "CREATE DB failed";
-    sh SQL.sh;
-    check "CREATE TABLE failed";
-}
+#installMariaDB(){
+#    out "INSTALL mariaDB";
+#    apt-get install  mariadb-server;
+#    check "install mariadb failed";
+#    cd $GOROOT/src/issues/models;
+#    sh SYSTEM.sh;
+#    check "CREATE DB failed";
+#    sh SQL.sh;
+#    check "CREATE TABLE failed";
+#}
 
 installSuperVisor(){
     out "INSTALL supervisor";
@@ -82,6 +86,5 @@ installNginx(){
 installSystem
 installGolang
 buildIssues
-installMariaDB
 installSuperVisor
 installNginx
