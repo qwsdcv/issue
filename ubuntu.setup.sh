@@ -29,6 +29,8 @@ installGolang(){
 }
 
 buildIssues(){
+    apt-get install build-essential;
+    
     out "build Issues";
     . /etc/profile.d/go.sh;
     cd $GOROOT/src;
@@ -47,6 +49,12 @@ buildIssues(){
     dep ensure;
     check "dep ensure error";
 
+    #Build sqlite3 (cgo)
+    cd $GOROOT/src/github.com/mattn/go-sqlite3/;
+    
+    go build --tags "linux";
+
+    cd $GOROOT/src/issues;
     go build;
     check "go build failed";
 

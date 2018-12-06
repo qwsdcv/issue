@@ -1,64 +1,77 @@
 package models
 
 import (
+	"database/sql"
 	"log"
+	"os"
 
-	"fmt"
-
-	"github.com/astaxie/beego"
-	"github.com/go-sql-driver/mysql"
+	_ "github.com/mattn/go-sqlite3" //sqlite3
 )
 
-const _Ip = "db_ip"
-const _Port = "db_port"
-const _Db = "db_db"
-const _User = "db_user"
-const _Password = "db_passworld"
+//SqliteInstance a global instance of the sqlite3
+var SqliteInstance *sql.DB
 
-//ConnectString parameter passing to Db.Open. Use sql.Open(db.DBName, db.ConnectString) to open a Connection
-var ConnectString string
-
-//DBName parameter passing to Db.Open. Use sql.Open(db.DBName, db.ConnectString) to open a Connection
-var DBName = "mysql"
+const dbFile = "./.issue.sqlite.db"
 
 //init database.Will auto create table needed if table not exist.
 func init() {
+	_, err := os.Stat(dbFile)
+	shouldInitTable := !os.IsExist(err)
 
-	ip := beego.AppConfig.String(_Ip)
-	port := beego.AppConfig.String(_Port)
-	db := beego.AppConfig.String(_Db)
-	user := beego.AppConfig.String(_User)
-	password := beego.AppConfig.String(_Password)
-
-	log.Printf("ip:[%s],port:[%s],user:[%s],password:[%s],db:[%s]", ip, port, user, password, db)
-
-	config := mysql.NewConfig()
-	log.Printf("Default DSN:%s", config.FormatDSN())
-
-	if ip != "" || port != "" {
-		addr := fmt.Sprintf("%s:%s", ip, port)
-		config.Addr = addr
-	}
-	if user != "" {
-		config.User = user
-	} else {
-		log.Panicf("DB User Not Set. Please set \"db_user=xxxx\" in conf/app.conf")
-	}
-	if password != "" {
-		config.Passwd = password
-	} else {
-		log.Panicf("DB Password Not Set. Please set \"db_passworld=xxxx\" in conf/app.conf")
-	}
-	config.Net = "tcp"
-	if db != "" {
-		config.DBName = db
-	} else {
-		log.Panicf("DB Name Not Set. Please set \"db_db=xxxx\" in conf/app.conf")
+	SqliteInstance, err = sql.Open("sqlite3", dbFile)
+	if err != nil {
+		defer SqliteInstance.Close()
+		SqliteInstance = nil
+		panic(err)
 	}
 
-	config.ParseTime = true
+	if shouldInitTable {
+		initTable()
+	}
+}
 
-	ConnectString = config.FormatDSN()
+func initTable() {
+	if SqliteInstance == nil {
+		panic("Error when trying to initialize table: SqliteInstance is nil")
+	}
+	createTableArticle()
+	createTableComment()
+}
 
-	log.Printf("DSN set as:%s", ConnectString)
+func createTable(sql string) {
+	_, err := SqliteInstance.Exec(sql)
+	if err != nil {
+		log.Fatal("Error when creating table.")
+		log.Fatal(err)
+	}
+}
+
+func createTableArticle() {
+	sqlString := `
+	CREATE TABLE IF NOT EXISTS articles(
+		id integer primary key autoincrement,
+		parent_id integer NOT NULL,
+		title text NOT NULL,
+		create_date datetime NOT NULL,
+		type text NOT NULL,
+		content text NOT NULL DEFAULT '',
+		visits integer NOT NULL DEFAULT 0
+	)
+	`
+	createTable(sqlString)
+}
+
+func createTableComment() {
+	sqlString := `
+	CREATE TABLE IF NOT EXISTS comments(
+		id integer primary key autoincrement,
+		articleid integer NOT NULL,
+		nick_name text NOT NULL,
+		ip integer NOT NULL,
+		content text NOT NULL,
+		create_date datetime NOT NULL,
+		foreign key(articleid) references articles(id)
+	)
+	`
+	createTable(sqlString)
 }

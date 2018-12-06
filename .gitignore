@@ -4,3 +4,7 @@ Gopkg*
 vendor/*
 *.log
 issues
+
+_vendor*
+
+*.db

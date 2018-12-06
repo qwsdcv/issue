@@ -37,11 +37,7 @@ var (
 
 //AddMenu add menu to DB
 func (ar *Article) AddMenu() (ret error) {
-	con, err := sql.Open(DBName, ConnectString)
-	defer con.Close()
-	if err != nil {
-		ret = err
-	}
+	con := SqliteInstance
 	tm := time.Now()
 	t := FormatTime(&tm)
 
@@ -57,11 +53,7 @@ func (ar *Article) AddMenu() (ret error) {
 
 //AddComment add comment to DB
 func (one *Comment) AddComment() (ret error) {
-	con, err := sql.Open(DBName, ConnectString)
-	defer con.Close()
-	if err != nil {
-		ret = err
-	}
+	con := SqliteInstance
 	tm := time.Now()
 	t := FormatTime(&tm)
 
@@ -77,11 +69,7 @@ func (one *Comment) AddComment() (ret error) {
 
 // GetMenu return menu hierarchy
 func GetMenu() (jsonObj []Article, err error) {
-	con, err := sql.Open(DBName, ConnectString)
-	defer con.Close()
-	if err != nil {
-		return
-	}
+	con := SqliteInstance
 	rows, err := con.Query("select id,parent_id,title,create_date,type from articles")
 	defer rows.Close()
 	if err != nil {
@@ -141,11 +129,7 @@ func (t atcls) Less(i, j int) bool {
 
 //GetContent return the Article whose Id is @id
 func GetContent(id string) (ar Article, err error) {
-	con, err := sql.Open(DBName, ConnectString)
-	defer con.Close()
-	if err != nil {
-		return
-	}
+	con := SqliteInstance
 	intID, err := strconv.Atoi(id)
 	if err != nil {
 		log.Println(err.Error())
@@ -174,11 +158,7 @@ func GetContent(id string) (ar Article, err error) {
 
 //SetContent update DB with content.
 func SetContent(id, content string) (err error) {
-	con, err := sql.Open(DBName, ConnectString)
-	defer con.Close()
-	if err != nil {
-		return
-	}
+	con := SqliteInstance
 	intID, err := strconv.Atoi(id)
 	if err != nil {
 		log.Println(err.Error())
@@ -190,12 +170,7 @@ func SetContent(id, content string) (err error) {
 
 //GetComment return Comment as Array
 func GetComment(articleID string) (jsonObj []Comment, err error) {
-	con, err := sql.Open(DBName, ConnectString)
-	defer con.Close()
-	if err != nil {
-		log.Println(err.Error())
-		return
-	}
+	con := SqliteInstance
 	rows, err := con.Query("select id,nick_name,ip,content,create_date from comments where articleid=? order by create_date desc", articleID)
 	defer rows.Close()
 	if err != nil {
