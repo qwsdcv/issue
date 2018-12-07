@@ -3,7 +3,6 @@ package models
 import (
 	"database/sql"
 	"log"
-	"os"
 
 	_ "github.com/mattn/go-sqlite3" //sqlite3
 )
@@ -15,9 +14,7 @@ const dbFile = "./.issue.sqlite.db"
 
 //init database.Will auto create table needed if table not exist.
 func init() {
-	_, err := os.Stat(dbFile)
-	shouldInitTable := !os.IsExist(err)
-
+	var err error
 	SqliteInstance, err = sql.Open("sqlite3", dbFile)
 	if err != nil {
 		defer SqliteInstance.Close()
@@ -25,9 +22,7 @@ func init() {
 		panic(err)
 	}
 
-	if shouldInitTable {
-		initTable()
-	}
+	initTable()
 }
 
 func initTable() {
@@ -36,6 +31,7 @@ func initTable() {
 	}
 	createTableArticle()
 	createTableComment()
+	createTableAttachment()
 }
 
 func createTable(sql string) {
@@ -71,6 +67,18 @@ func createTableComment() {
 		content text NOT NULL,
 		create_date datetime NOT NULL,
 		foreign key(articleid) references articles(id)
+	)
+	`
+	createTable(sqlString)
+}
+
+func createTableAttachment() {
+	sqlString := `
+	CREATE TABLE IF NOT EXISTS attachments(
+		id integer primary key autoincrement,
+		type text NOT NULL,
+		content text NOT NULL,
+		create_date datetime NOT NULL
 	)
 	`
 	createTable(sqlString)

@@ -18,4 +18,7 @@ func init() {
 	beego.Router("/issues/comment", &controllers.IssueController{}, "post:AddComment")
 
 	beego.Router("/issues/secret", &controllers.IssueController{}, "post:Login")
+
+	beego.Router("/issues/attachment", &controllers.IssueController{}, "post:AddAttachment")
+	beego.Router("/issues/attachment/:id", &controllers.IssueController{}, "get:GetAttachment")
 }

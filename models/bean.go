@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"log"
 	"sort"
 	"strconv"
@@ -191,5 +192,40 @@ func GetComment(articleID string) (jsonObj []Comment, err error) {
 
 	jsonObj = retArray
 
+	return
+}
+
+//Attachment is Go bean for table attachments
+type Attachment struct {
+	ID         int    `json:"id"`
+	Type       string `json:"type"`
+	Content    string `json:"content"`
+	CreateDate string `json:"date"`
+}
+
+//Add one attachment return the id
+func (attachment *Attachment) Add() (err error) {
+	decoded, err := base64.StdEncoding.DecodeString(attachment.Content)
+	con := SqliteInstance
+
+	tm := time.Now()
+	t := FormatTime(&tm)
+
+	res, err := con.Exec("INSERT INTO attachments(type,content,create_date) VALUES(?,?,?)", attachment.Type, decoded, t)
+	if err != nil {
+		return
+	}
+	id64, err := res.LastInsertId()
+	attachment.ID = int(id64)
+	return
+}
+
+//Get will return Attachment bean
+func (attachment *Attachment) Get() (buff []byte, err error) {
+	con := SqliteInstance
+	buff = make([]byte, 0, 8*1024*1024)
+
+	res := con.QueryRow("SELECT type,content FROM attachments WHERE id=?", attachment.ID)
+	err = res.Scan(&attachment.Type, &buff)
 	return
 }

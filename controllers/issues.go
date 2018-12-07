@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"issues/models"
 	"strconv"
@@ -164,4 +165,42 @@ func (c *IssueController) AddComment() {
 	}
 	c.Data["json"] = obj
 	c.ServeJSON()
+}
+
+//AddAttachment will add an attachment to DB and return the url.
+func (c *IssueController) AddAttachment() {
+	var bean models.Attachment
+	err := json.Unmarshal(c.Ctx.Input.RequestBody, &bean)
+	if err != nil {
+		c.CustomAbort(500, err.Error())
+	}
+
+	err = bean.Add()
+	if err != nil {
+		c.CustomAbort(500, err.Error())
+	}
+	c.Ctx.Output.Header("Content-Type", "application/json; charset=utf-8")
+	ret := fmt.Sprintf("{\"url\":\"/issues/attachment/%d\"}", bean.ID)
+	c.Ctx.Output.Body([]byte(ret))
+}
+
+//GetAttachment will return the content by the resource id.
+func (c *IssueController) GetAttachment() {
+
+	var bean models.Attachment
+	var err error
+	idStr := c.Ctx.Input.Param(":id")
+	bean.ID, err = strconv.Atoi(idStr)
+	if err != nil {
+		c.CustomAbort(500, err.Error())
+	}
+
+	buff, err := bean.Get()
+	if err != nil {
+		c.CustomAbort(500, err.Error())
+	}
+	c.Ctx.Output.Header("Content-Type", bean.Type)
+	contentLen := strconv.Itoa(len(buff))
+	c.Ctx.Output.Header("Content-Length", contentLen)
+	c.Ctx.Output.Body(buff)
 }

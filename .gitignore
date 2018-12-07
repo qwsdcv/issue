@@ -8,3 +8,5 @@ issues
 _vendor*
 
 *.db
+
+.vscode
