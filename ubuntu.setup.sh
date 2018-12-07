@@ -24,7 +24,7 @@ installGolang(){
 
     out "Setting environment variable";
     mkdir -p $GOROOT/src;
-    echo -e "export GOPATH=$GOROOT\nexport PATH=\$PATH:${GOROOT}/bin" > /etc/profile.d/go.sh;
+    echo -e "export GOPATH=$GOROOT\nexport PATH=\$PATH:${GOROOT}/bin:/usr/lib/go-${GOVERSION}/bin" > /etc/profile.d/go.sh;
     . /etc/profile.d/go.sh;
 }
 
@@ -37,11 +37,12 @@ buildIssues(){
     go get -u github.com/golang/dep/cmd/dep;
     check "install go dep error";
     cd $GOROOT/src;
-    if [ ! -d "issue" ];then
+    if [ ! -d "issues" ];then
     git clone --depth=1 https://github.com/qwsdcv/issues.git;
     check "git clone error";
     fi
     cd issues;
+    rm -f Gopkg.*;
     dep init;
     check "dep init error";
     dep status;
@@ -79,12 +80,18 @@ installSuperVisor(){
     service supervisor restart;
 }
 
+cleanNginx(){
+    apt-get --purge remove nginx-common;
+    apt-get --purge remove nginx*;
+    apt-get autoremove;
+}
+
 installNginx(){
     out "INSTALL nginx";
     apt-get install nginx;
     check "install nginx error";
     out "config nginx";
-    echo -e "server {\n    listen 80;\n    server_name gushijingcai.com;\n\n    location / {\n        root /home/go/src/issues/static;\n        index index.html;\n    }\n\n    location ^~ /issues/ {\n        proxy_pass http://127.0.0.1:8088;\n    }\n}\n" > /etc/nginx/conf.d/issues.conf;
+    echo -e "server {\n    listen 80;\n    server_name gushijingcai.com;\n\n    location / {\n        root /home/go/src/issues/static;\n        index index.html;\n    }\n\n    location ^~ /issues/ {\n        proxy_pass http://127.0.0.1:8088;\n        proxy_set_header Host \$host;\n        proxy_set_header X-Real-IP \$remote_addr;\n        proxy_set_header REMOTE-HOST \$remote_addr;\n        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;\n    }\n}\n" > /etc/nginx/conf.d/issues.conf;
     nginx -s reload;
     check "nginx reload error";
 }
