@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -72,4 +73,16 @@ func FilterLogin(ctx *context.Context) {
 	if !ok {
 		ctx.Abort(401, "Not Authorizd")
 	}
+}
+
+type visitFrequence struct {
+	IP string
+}
+
+//FilterDDOS flter ddos attack
+func FilterDDOS(ctx *context.Context) {
+	ip := ctx.Input.IP()
+	host := ctx.Input.Host()
+	log.Printf("Connecting ip [%s], host is [%s].\n", ip, host)
+
 }

@@ -10,6 +10,7 @@ import (
 func main() {
 	beego.SetViewsPath("static")
 	beego.SetStaticPath("/js", "static/js")
+	beego.InsertFilter("/*", beego.BeforeRouter, models.FilterDDOS)
 	beego.InsertFilter("/*", beego.BeforeRouter, models.FilterLogin)
 	beego.Run()
 }
