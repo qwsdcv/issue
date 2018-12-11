@@ -20,7 +20,8 @@ sap.ui.define([
             this.Spacer = this.byId("Spacer");
             this.PopInput = null;
             this.TextArea = this.byId("TypeHere");
-            this.TextArea.onpaste = this.onPaste;
+            this.initPasteEventHadler();
+
             this.HTML = this.byId("PreviewHere");
 
             this.JsonModel = new JSONModel();
@@ -40,42 +41,56 @@ sap.ui.define([
             this.Converter.setOption('underline', true);
         },
 
-        onPaste: function (thePasteEvent) {
+        initPasteEventHadler: function (context) {
             let that = this;
-            if (thePasteEvent && thePasteEvent.originalEvent && thePasteEvent.originalEvent.clipboardData) {
-                let items = thePasteEvent.originalEvent.clipboardData.items;
-                if (items) {
-                    for (var i = 0; i < items.length; i++) {
-                        // Skip content if not image
-                        if (items[i].type.indexOf("image") == -1) continue;
-                        // Retrieve image on clipboard as blob
-                        let blob = items[i].getAsFile();
+            this.TextArea.onpaste = (thePasteEvent) => {
+                if (thePasteEvent && thePasteEvent.originalEvent && thePasteEvent.originalEvent.clipboardData) {
+                    let items = thePasteEvent.originalEvent.clipboardData.items;
+                    if (items) {
+                        for (var i = 0; i < items.length; i++) {
+                            // Skip content if not image
+                            if (items[i].type.indexOf("image") == -1) continue;
+                            // Retrieve image on clipboard as blob
+                            let blob = items[i].getAsFile();
 
 
-                        let reader = new FileReader();
-                        reader.readAsBinaryString(blob);
-                        reader.onload = () => {
-                            let obj = {
-                                type: blob.type,
-                                content: btoa(reader.result)
-                            };
-                            $.ajax({
-                                url: '/issues/attachment',
-                                method: 'POST',
-                                dataType: 'json',
-                                data: JSON.stringify(obj),
-                                contentType: 'application/json; charset=utf-8',
-                                error: (jqXHR, textStatus, errorThrown) => {
-                                    MessageToast.show(errorThrown);
-                                },
-                                success: (json) => {
-                                    MessageToast.show("Submited." + json.url);
-                                }
-                            });
+                            let reader = new FileReader();
+                            reader.readAsBinaryString(blob);
+                            reader.onload = () => {
+                                let obj = {
+                                    type: blob.type,
+                                    content: btoa(reader.result)
+                                };
+                                $.ajax({
+                                    url: '/issues/attachment',
+                                    method: 'POST',
+                                    dataType: 'json',
+                                    data: JSON.stringify(obj),
+                                    contentType: 'application/json; charset=utf-8',
+                                    error: (jqXHR, textStatus, errorThrown) => {
+                                        MessageToast.show(errorThrown);
+                                    },
+                                    success: (json) => {
+                                        MessageToast.show("Submited." + json.url);
+                                        let picUrl = `![](${window.location.protocol}//${window.location.host}${json.url})`;
+                                        let tt = that.TextArea;
+                                        let ta = $(tt.getDomRef()).find('TextArea')[0];
+                                        let start = ta.selectionStart;
+                                        let end = ta.selectionEnd;
+
+                                        let txt = tt.getValue();
+                                        let newTxt = txt.substring(0, start) + picUrl + txt.substring(end);
+
+                                        tt.setValue(newTxt);
+                                        that.TextArea.fireLiveChange({ value: newTxt });
+                                    }
+                                });
+                            }
                         }
                     }
                 }
-            }
+            };
+
         },
 
         getParameterByName: function (name) {
