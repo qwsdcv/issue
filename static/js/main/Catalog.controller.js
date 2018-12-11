@@ -53,11 +53,11 @@ sap.ui.define([
 
 
                         let reader = new FileReader();
-                        reader.readAsDataURL(blob);
+                        reader.readAsBinaryString(blob);
                         reader.onload = () => {
                             let obj = {
                                 type: blob.type,
-                                content: reader.result
+                                content: btoa(reader.result)
                             };
                             $.ajax({
                                 url: '/issues/attachment',

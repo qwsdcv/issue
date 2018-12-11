@@ -206,6 +206,9 @@ type Attachment struct {
 //Add one attachment return the id
 func (attachment *Attachment) Add() (err error) {
 	decoded, err := base64.StdEncoding.DecodeString(attachment.Content)
+	if err != nil {
+		return
+	}
 	con := SqliteInstance
 
 	tm := time.Now()
@@ -223,9 +226,10 @@ func (attachment *Attachment) Add() (err error) {
 //Get will return Attachment bean
 func (attachment *Attachment) Get() (buff []byte, err error) {
 	con := SqliteInstance
-	buff = make([]byte, 0, 8*1024*1024)
+	var byteBuff []byte
 
 	res := con.QueryRow("SELECT type,content FROM attachments WHERE id=?", attachment.ID)
-	err = res.Scan(&attachment.Type, &buff)
+	err = res.Scan(&attachment.Type, &byteBuff)
+	buff = byteBuff
 	return
 }
