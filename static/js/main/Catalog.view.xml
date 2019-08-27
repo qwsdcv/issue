@@ -88,6 +88,7 @@
 						<ToolbarSpacer id="Spacer" />
 						<Button icon="sap-icon://add-document" tooltip="NewFile" press="newDocument" visible="{path:'',formatter:'.isEditMode'}"/>
 						<Button icon="sap-icon://add-folder" tooltip="NewFolder" press="newFolder" visible="{path:'',formatter:'.isEditMode'}"/>
+						<Button icon="sap-icon://delete" tooltip="Delete" press="deleteDocument" visible="{path:'',formatter:'.isEditMode'}"/>
 					</Toolbar>
 				</subHeader>
 				<content>

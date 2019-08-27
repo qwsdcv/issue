@@ -116,6 +116,33 @@ sap.ui.define([
             this.NewType = Formatter.DOCUMENT;
             this.PopInput.openBy(openTarget);
         },
+        deleteDocument: function(event){
+            let that =this;
+            jQuery.sap.log.info("deleteDocument");
+
+            if(this.CurrentSelected == null){
+                MessageToast.show("Not Select Item.");
+                return;
+            }
+
+            let currentPath = this.CurrentSelected.getBindingContextPath();
+            let obj = this.JsonModel.getObject(currentPath);
+
+            $.ajax({
+                url: '/issues/content/' + obj.id,
+                method: 'DELETE',
+                dataType: 'json',
+                data: JSON.stringify(obj),
+                contentType: 'application/json; charset=utf-8',
+                error: (jqXHR, textStatus, errorThrown) => {
+                    MessageToast.show(errorThrown);
+                },
+                success: (json) => {
+                    MessageToast.show("Success Delete.");
+                    that.loadMenu();
+                }
+            });
+        },
 
         newFolder: function (event) {
             jQuery.sap.log.info("newFolder");

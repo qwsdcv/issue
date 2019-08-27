@@ -92,8 +92,10 @@ func GetMenu() (jsonObj []Article, err error) {
 	for key, value := range Map {
 		if value.ParentID != 0 {
 			kid := Map[key]
-			father := Map[value.ParentID]
-			father.Data = append(father.Data, *kid)
+			father, hasKey := Map[value.ParentID]
+			if hasKey {
+				father.Data = append(father.Data, *kid)
+			}
 		}
 	}
 	for _, value := range Map {
@@ -166,6 +168,39 @@ func SetContent(id, content string) (err error) {
 		return
 	}
 	_, err = con.Exec("update articles set content=? where id=?", content, intID)
+	return
+}
+
+//DeleteContent delete the content and the related comment.
+func DeleteContent(id string) (err error) {
+	con := SqliteInstance
+	intID, err := strconv.Atoi(id)
+
+	rows, err := con.Query("select id from articles where parent_id=?", intID)
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var subID int
+		rows.Scan(&subID)
+		if intID == subID {
+			continue
+		}
+		err = DeleteContent(strconv.Itoa(subID))
+		if err != nil {
+			return
+		}
+	}
+
+	_, err = con.Exec("delete from comments where articleid=?", intID)
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+	_, err = con.Exec("delete from articles where id=?", intID)
 	return
 }
 

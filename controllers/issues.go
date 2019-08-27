@@ -100,6 +100,17 @@ func (c *IssueController) SetContent() {
 	c.Ctx.Output.Body([]byte("{}"))
 }
 
+//DeleteContent will Delete a content by id
+func (c *IssueController) DeleteContent() {
+	id := c.Ctx.Input.Param(":id")
+	err := models.DeleteContent(id)
+	if err != nil {
+		c.CustomAbort(500, err.Error())
+	}
+	c.Ctx.Output.Header("Content-Type", "application/json; charset=utf-8")
+	c.Ctx.Output.Body([]byte("{}"))
+}
+
 //Login enter root mode, which means you can modify the contents.
 func (c *IssueController) Login() {
 	var secret login
