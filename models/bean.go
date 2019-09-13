@@ -38,7 +38,8 @@ var (
 
 //AddMenu add menu to DB
 func (ar *Article) AddMenu() (ret error) {
-	con := SqliteInstance
+	con := GetConnection()
+	defer con.Close()
 	tm := time.Now()
 	t := FormatTime(&tm)
 
@@ -54,7 +55,8 @@ func (ar *Article) AddMenu() (ret error) {
 
 //AddComment add comment to DB
 func (one *Comment) AddComment() (ret error) {
-	con := SqliteInstance
+	con := GetConnection()
+	defer con.Close()
 	tm := time.Now()
 	t := FormatTime(&tm)
 
@@ -70,7 +72,8 @@ func (one *Comment) AddComment() (ret error) {
 
 // GetMenu return menu hierarchy
 func GetMenu() (jsonObj []Article, err error) {
-	con := SqliteInstance
+	con := GetConnection()
+	defer con.Close()
 	rows, err := con.Query("select id,parent_id,title,create_date,type from articles")
 	defer rows.Close()
 	if err != nil {
@@ -132,7 +135,8 @@ func (t atcls) Less(i, j int) bool {
 
 //GetContent return the Article whose Id is @id
 func GetContent(id string) (ar Article, err error) {
-	con := SqliteInstance
+	con := GetConnection()
+	defer con.Close()
 	intID, err := strconv.Atoi(id)
 	if err != nil {
 		log.Println(err.Error())
@@ -161,7 +165,8 @@ func GetContent(id string) (ar Article, err error) {
 
 //SetContent update DB with content.
 func SetContent(id, content string) (err error) {
-	con := SqliteInstance
+	con := GetConnection()
+	defer con.Close()
 	intID, err := strconv.Atoi(id)
 	if err != nil {
 		log.Println(err.Error())
@@ -173,7 +178,8 @@ func SetContent(id, content string) (err error) {
 
 //DeleteContent delete the content and the related comment.
 func DeleteContent(id string) (err error) {
-	con := SqliteInstance
+	con := GetConnection()
+	defer con.Close()
 	intID, err := strconv.Atoi(id)
 
 	rows, err := con.Query("select id from articles where parent_id=?", intID)
@@ -206,7 +212,8 @@ func DeleteContent(id string) (err error) {
 
 //GetComment return Comment as Array
 func GetComment(articleID string) (jsonObj []Comment, err error) {
-	con := SqliteInstance
+	con := GetConnection()
+	defer con.Close()
 	rows, err := con.Query("select id,nick_name,ip,content,create_date from comments where articleid=? order by create_date desc", articleID)
 	defer rows.Close()
 	if err != nil {
@@ -244,7 +251,8 @@ func (attachment *Attachment) Add() (err error) {
 	if err != nil {
 		return
 	}
-	con := SqliteInstance
+	con := GetConnection()
+	defer con.Close()
 
 	tm := time.Now()
 	t := FormatTime(&tm)
@@ -260,7 +268,8 @@ func (attachment *Attachment) Add() (err error) {
 
 //Get will return Attachment bean
 func (attachment *Attachment) Get() (buff []byte, err error) {
-	con := SqliteInstance
+	con := GetConnection()
+	defer con.Close()
 	var byteBuff []byte
 
 	res := con.QueryRow("SELECT type,content FROM attachments WHERE id=?", attachment.ID)

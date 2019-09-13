@@ -4,9 +4,12 @@ Gopkg*
 vendor/*
 *.log
 issues
+build
 
 _vendor*
 
 *.db
 
 .vscode
+
+go.sum
