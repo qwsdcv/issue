@@ -1,8 +1,9 @@
 #!/bin/bash
 
-source common.sh;
+
 
 apt-get install shadowsocks;
+apt-get install supervisor;
 
 SSCONFIG=~/.ss.conf;
 
